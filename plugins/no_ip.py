@@ -14,7 +14,7 @@ class NoAddressPlugin(ServicePlugin):
     Update a dns entry on no-ip.com.
 
     Supports most address plugins including default-web-ip, default-if and
-    ip-disabled. ipv6 is not supported.
+    ip-disabled. ipv6 is supported.
 
     netrc: Use a line like
         machine dynupdate.no-ip.com login <username>  password <password>
@@ -25,12 +25,15 @@ class NoAddressPlugin(ServicePlugin):
 
     _name = 'no-ip.com'
     _oneliner = 'Updates on http://no-ip.com/'
-    _url = "http://dynupdate.no-ip.com/nic/update?hostname={0}"
+    _url = "https://dynupdate.no-ip.com/nic/update?hostname={0}"
 
     def register(self, log, hostname, ip, options):
         """Implement ServicePlugin.register()."""
         url = self._url.format(hostname)
-        if ip:
-            url += "&myip=" + ip.v4
+        if ip
+            if ip.v6:
+                url += "&myip=" + ip.v6
+            elif ip.v4:
+                url += "&myip=" + ip.v4
         http_basic_auth_setup(url)
         get_response(log, url)
